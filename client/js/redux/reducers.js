@@ -1,94 +1,175 @@
+import { combineReducers } from 'redux'
 import * as constants from './constants'
 
 const defaultState = {
-  credentials: null,
-  reviews: [],
+  reviews: {
+    isFetching: false,
+    didInvalidate: false,
+    items: [],
+    message: null
+  },
+  reviewForm: {
+    action: null,
+    coffeeShops: [],
+    isSubmitting: false,
+    message: null
+  },
   auth: {
     isFetching: false,
-    isAuthenticated: localStorage.getItem('accessToken') ? true : false,
-    message: null,
-    accessToken: null
-  }
+    isAuthenticated: !!localStorage.getItem('userInfo') ? true : false,
+    message: null
+  },
+  userInfo: !!localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null
 }
 
-function rootReducer(state = defaultState, action) {
+const reviews = (state = defaultState.reviews, action) => {
   switch (action.type) {
-    /** REVIEWS **/
-    // case constants.REQUEST_REVIEWS:
-    // case constants.RECEIVE_REVIEWS:
-    // case constants.ALL_REVIEWS:
-    // case constants.ADD_REVIEW:
-    // case constants.EDIT_REVIEW:
-    // case constants.DELETE_REVIEW:
-
-    /** AUTH **/
-    case constants.LOGIN_REQUEST:
+    case constants.INVALIDATE_REVIEWS:
       return {
         ...state,
-        auth: {
-          isFetching: true,
-          isAuthenticated: false,
-          message: null,
-        },
-        credentials: {
-          email: action.credentials.email
-        }
+        didInvalidate: true
       }
-    case constants.LOGIN_SUCCESS:
+    case constants.REVIEWS_REQUEST:
       return {
         ...state,
-        auth: {
-          isFetching: false,
-          isAuthenticated: true,
-          accessToken: action.accessToken
-        }
+        isFetching: true,
+        didInvalidate: false,
+        message: null
       }
-    case constants.LOGOUT_REQUEST:
+    case constants.REVIEWS_SUCCESS:
       return {
         ...state,
-        auth: {
-          isFetching: true,
-          isAuthenticated: true,
-          message: null
-        }
+        isFetching: false,
+        didInvalidate: false,
+        items: action.reviews
       }
-    case constants.LOGOUT_SUCCESS:
+    case constants.REVIEWS_ERROR:
       return {
         ...state,
-        auth: {
-          isFetching: false,
-          isAuthenticated: false,
-          accessToken: null
-        },
-        credentials: null
-      }
-    case constants.REGISTER_REQUEST:
-      return {
-        ...state,
-        auth: {
-          isFetching: true,
-          isAuthenticated: false
-        }
-      }
-    case constants.REGISTER_SUCCESS:
-      return {
-        ...state,
-        auth: {
-          isFetching: false,
-          isAuthenticated: false
-        }
-      }
-    case constants.AUTH_FAILURE:
-      return {
-        ...state,
-        auth: {
-          isFetching: false,
-          message: action.message
-        }
+        isFetching: false,
+        message: action.message
       }
     default:
       return state
   }
 }
 
-export default rootReducer
+const reviewForm = (state = defaultState.reviewForm, action) => {
+  switch (action.type) {
+    case constants.CHANGE_REVIEW_ACTION:
+      return {
+        ...state,
+        action: action.action
+      }
+    case constants.SUBMIT_REVIEW:
+      return {
+        ...state,
+        isSubmitting: true
+      }
+    case constants.REVIEW_FORM_SUCCESS:
+      return {
+        ...state,
+        action: null,
+        isSubmitting: false
+      }
+    case constants.REVIEW_FORM_ERROR:
+      return {
+        ...state,
+        isSubmitting: false,
+        message: action.message
+      }
+    case constants.COFFEESHOPS_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        message: null
+      }
+    case constants.COFFEESHOPS_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        coffeeShops: action.coffeeShops
+      }
+    case constants.COFFEESHOPS_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        message: action.message
+      }
+    default:
+      return state
+  }
+}
+
+const auth = (state = defaultState.auth, action) => {
+  switch (action.type) {
+    case constants.LOGIN_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        isAuthenticated: false,
+        message: null
+      }
+    case constants.LOGIN_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        isAuthenticated: true
+      }
+    case constants.LOGOUT_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        isAuthenticated: true,
+        message: null
+      }
+    case constants.LOGOUT_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        isAuthenticated: false
+      }
+    case constants.REGISTER_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        isAuthenticated: false
+      }
+    case constants.REGISTER_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        isAuthenticated: false
+      }
+    case constants.AUTH_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        message: action.message
+      }
+    default:
+      return state
+  }
+}
+
+const userInfo = (state = defaultState.userInfo, action) => {
+  switch (action.type) {
+    case constants.LOGIN_REQUEST:
+      return {
+        ...state,
+        email: action.credentials.email
+      }
+    case constants.LOGIN_SUCCESS:
+      return {
+        ...state,
+        accessToken: action.accessToken,
+        userId: action.userId
+      }
+    case constants.LOGOUT_SUCCESS:
+      return null
+    default:
+      return state
+  }
+}
+
+export default combineReducers({ reviews, reviewForm, auth, userInfo })

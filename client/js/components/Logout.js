@@ -5,9 +5,7 @@ import { logout } from '../redux/actions'
 
 const Logout = ({ dispatch }) => {
   dispatch(logout())
-  return (
-    <div></div>
-  )
+  return null
 }
 
 export default connect()(Logout)

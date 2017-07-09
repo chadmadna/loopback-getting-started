@@ -3,6 +3,22 @@
   margin:0;
   padding:0;
 }
+a {
+  margin:0 .3rem;
+}
+a[role="button"] {
+  background:#eee;
+  border:0;
+  color:#777;
+  cursor:pointer;
+  font-family:'courier new';
+  font-size:1rem;
+  padding:.5rem;
+  margin:0 .5rem;
+}
+a[role="button"]:active {
+  background:#ddd;
+}
 body {
   font-family:'courier new';
   font-size:1rem;
@@ -15,6 +31,7 @@ button {
   font-family:'courier new';
   font-size:1rem;
   padding:.5rem;
+  margin:0 .5rem;
 }
 button:active {
   background:#ddd;
@@ -46,31 +63,31 @@ p {
   padding:1rem;
 }
 /*header*/
-body header {
+header#header {
   border-bottom:1px solid #ccc;
 }
-body header h1 {
+header#header h1 {
   font-size:2rem;
   padding:1rem 1rem 0 1rem;
 }
-body header h2 {
+header#header h2 {
   font-size:1rem;
   padding:0 1rem;
 }
 /*nav*/
-body header nav {
+header#header nav {
   padding:1rem;
 }
-body header nav li {
+header#header nav li {
   display:inline-block;
   padding-bottom:.5rem;
 }
-body header nav li a {
+header#header nav li a {
   color:#777;
   padding:.5rem;
   text-decoration:none;
 }
-body header nav li a.active {
+header#header nav li a.active {
   background:#eee;
 }
 /*main*/
@@ -95,6 +112,7 @@ textarea {
   border:0;
   display:inline-block;
   font-family:'courier new';
+  margin:0 .5rem;
   margin-bottom:1rem;
   padding:.5rem;
   vertical-align:middle;

@@ -27,16 +27,14 @@ class SignUpForm extends React.Component {
               <label>Email</label>
               <input
                 name="email"
-                type="text"
-                defaultValue="foo@bar.com"/>
+                type="text"/>
             </div>
 
             <div className="form-group">
               <label>Password</label>
               <input
                 name="password"
-                type="password"
-                defaultValue="foobar"/>
+                type="password"/>
             </div>
 
             <div className="actions">

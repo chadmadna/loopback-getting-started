@@ -1,21 +1,22 @@
 import React from 'react'
 import dateFormat from 'dateFormat'
 import { connect } from 'react-redux'
-import { fetchAllReviews } from '../redux/actions'
+import { Link } from 'react-router'
+import { fetchMyReviews, deleteReview } from '../redux/actions'
 
-class AllReviews extends React.Component {
+class MyReviews extends React.Component {
   constructor(props) {
     super(props)
     const { dispatch } = this.props
-    dispatch(fetchAllReviews())
+    dispatch(fetchMyReviews())
   }
 
   render() {
-    const { reviews } = this.props
+    const { reviews, user, dispatch } = this.props
     return (
       <section>
         {
-          !!reviews && reviews.slice().reverse().map((r, i) => {
+          reviews.slice().reverse().map((r, i) => {
             const formattedDate = dateFormat(new Date(r.date), 'mmm d, yyyy')
             return (
               <article key={i}>
@@ -24,6 +25,13 @@ class AllReviews extends React.Component {
                   <h2>{r.reviewer.email}</h2>
                 </header>
                 <p>{r.rating}&#9733; - {r.comments}</p>
+                {
+                  !!user &&
+                  <div className="actions">
+                    <Link role="button" to={`edit-review/${r.id}`}>Edit</Link>
+                    <button onClick={e => dispatch(deleteReview(r.id))}>Delete</button>
+                  </div>
+                }
               </article>
             )
           })
@@ -34,7 +42,8 @@ class AllReviews extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  reviews: state.reviews.items
+  reviews: state.reviews.items,
+  user: state.userInfo.userId
 })
 
-export default connect(mapStateToProps)(AllReviews)
+export default connect(mapStateToProps)(MyReviews)
