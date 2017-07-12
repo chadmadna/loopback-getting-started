@@ -1,5 +1,5 @@
 import React from 'react'
-import dateFormat from 'dateFormat'
+import dateFormat from 'dateformat'
 import { connect } from 'react-redux'
 import { fetchAllReviews } from '../redux/actions'
 

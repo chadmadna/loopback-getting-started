@@ -1,5 +1,5 @@
 import React from 'react'
-import dateFormat from 'dateFormat'
+import dateFormat from 'dateformat'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { fetchMyReviews, deleteReview } from '../redux/actions'
