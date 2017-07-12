@@ -6,7 +6,7 @@ var source = require('vinyl-source-stream')
 gulp.task('bundle', function () {
   return browserify({
     extensions: ['.js', '.jsx'],
-    entries: './app/index.js'
+    entries: './client/js/index.js'
   })
     .transform(babelify.configure({
       ignore: /(bower_components)|(node_modules)/
@@ -14,5 +14,5 @@ gulp.task('bundle', function () {
     .bundle()
     .on('error', function (err) { console.log('Error : ' + err.message) })
     .pipe(source('index_bundle.js'))
-    .pipe(gulp.dest(__dirname))
+    .pipe(gulp.dest(__dirname + './client/js/dist'))
 })
