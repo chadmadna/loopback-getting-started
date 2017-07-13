@@ -18,7 +18,6 @@ class ReviewForm extends React.Component {
   componentWillMount() {
     const { dispatch, location } = this.props
     const action = capitalize(location.pathname.split('-', 1)[0].replace(/\//g, ''))
-    console.log(action)
     dispatch(changeReviewAction(action))
     if (action !== 'Edit') {
       dispatch(fetchCoffeeShops())
@@ -26,14 +25,14 @@ class ReviewForm extends React.Component {
   }
 
   handleSubmit(event) {
-    const { dispatch, action, routeParams } = this.props
+    const { dispatch, action, routeParams, publisherId } = this.props
     const selectedShop = event.target.elements['selectedShop'].value
     const rating = document.querySelector('input[name="rating"]:checked').value
     const comments = event.target.elements['comments'].value
     if (action === 'Add') {
-      dispatch(addReview(selectedShop, rating, comments))
+      dispatch(addReview(selectedShop, rating, comments, publisherId))
     } else if (action === 'Edit') {
-      dispatch(editReview(selectedShop, rating, comments, routeParams.id))
+      dispatch(editReview(selectedShop, rating, comments, routeParams.id, publisherId))
     }
     event.preventDefault()
   }
@@ -93,9 +92,13 @@ class ReviewForm extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  action: state.reviewForm.action,
-  coffeeShops: state.reviewForm.coffeeShops
-})
+const mapStateToProps = state => {
+  const coffeeShops = state.loopbackStore.CoffeeShops
+  return {
+    action: state.reviewForm.action,
+    coffeeShops: (!!coffeeShops && !!coffeeShops.items) ? coffeeShops.items : [],
+    publisherId: state.userInfo.userId
+  }
+}
 
 export default connect(mapStateToProps)(ReviewForm)

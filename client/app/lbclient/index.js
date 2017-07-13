@@ -18,7 +18,8 @@ const baseUrl = typeof document === 'object'
   : 'http://0.0.0.0:3000/api'
 
 const getAccessToken = () => {
-  return JSON.parse(localStorage.getItem('userInfo')).accessToken
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+  return !!userInfo ? userInfo.accessToken : ''
 }
 
 export const create = (modelName, data, done) => {
@@ -28,7 +29,7 @@ export const create = (modelName, data, done) => {
     post(`${baseUrl}/${modelName}`, data, config)
       .then(() => {
         dispatch(success(modelName))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
@@ -41,7 +42,7 @@ export const find = (modelName, filter = {}, done) => {
     get(`${baseUrl}/${modelName}`, config)
       .then(({ data }) => {
         dispatch(receive(modelName, data))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
@@ -54,7 +55,7 @@ export const findById = (modelName, id, filter = {}, done) => {
     get(`${baseUrl}/${modelName}/${id}`, config)
       .then(({ data }) => {
         dispatch(receive(modelName, data))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
@@ -67,7 +68,7 @@ export const findOne = (modelName, filter = {}, done) => {
     get(`${baseUrl}/${modelName}`, config)
       .then(({ data }) => {
         dispatch(receive(data[0]))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
@@ -80,7 +81,7 @@ export const updateAll = (modelName, filter = {}, data, done) => {
     post(`${baseUrl}/${modelName}`, data, config)
       .then(({ data }) => {
         dispatch(success(modelName))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
@@ -90,10 +91,10 @@ export const updateById = (modelname, id, data, done) => {
   return dispatch => {
     dispatch(request(modelName))
     const config = { params: { filter }, headers: { 'authorization': getAccessToken() } }
-    get(`${baseUrl}/${modelName}/${id}`, config)
+    patch(`${baseUrl}/${modelName}/${id}`, config)
       .then(({ data }) => {
         dispatch(success(modelName))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
@@ -106,49 +107,49 @@ export const destroyById = (modelName, id, done) => {
     delete(`${baseUrl}/${modelName}/${id}`, config)
       .then(({ data }) => {
         dispatch(success(modelName))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(error(err.message)))
   }
 }
 
-export const register = (credentials, done) => {
+export const register = (userModel, credentials, done) => {
   return dispatch => {
     dispatch(requestRegister())
 
-    post(`${baseUrl}/User`, credentials)
+    post(`${baseUrl}/${userModel}`, credentials)
       .then(() => {
         dispatch(receiveRegister())
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(authError(err.message)))
   }
 }
 
-export const login = (credentials, done) => {
+export const login = (userModel, credentials, done) => {
   return dispatch => {
     dispatch(requestLogin(credentials))
 
-    post(`${baseUrl}/User/login`, credentials)
+    post(`${baseUrl}/${userModel}/login`, credentials)
       .then(({ data }) => {
         dispatch(receiveLogin(data))
         const userInfo = { accessToken: data.id, userId: data.userId, email: credentials.email }
         localStorage.setItem('userInfo', JSON.stringify(userInfo))
-        if (done && typeof done == 'function') done()
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(authError(err.message)))
   }
 }
 
-export const logout = (done) => {
+export const logout = (userModel, done) => {
   return dispatch => {
-    dispatch(requestLogout(modelName))
+    dispatch(requestLogout())
     const config = { headers: { 'authorization': getAccessToken() } }
-    post(`${baseUrl}/User/logout`, null, config)
+    post(`${baseUrl}/${userModel}/logout`, null, config)
       .then(() => {
         localStorage.removeItem('userInfo')
-        dispatch(receiveLogout(modelName))
-        if (done && typeof done == 'function') done()
+        dispatch(receiveLogout())
+        if (!!done && typeof done == 'function') done()
       })
       .catch(err => dispatch(authError(err.message)))
   }

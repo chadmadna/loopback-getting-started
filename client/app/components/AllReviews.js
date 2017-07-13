@@ -33,8 +33,11 @@ class AllReviews extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  reviews: state.reviews.items
-})
+const mapStateToProps = state => {
+  const reviews = state.loopbackStore.Reviews
+  return {
+    reviews: (!!reviews && !!reviews.items) ? reviews.items : []
+  }
+}
 
 export default connect(mapStateToProps)(AllReviews)

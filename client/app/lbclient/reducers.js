@@ -105,22 +105,20 @@ export const auth = (state = defaultState.auth, action) => {
 
 export const userInfo = (state = defaultState.userInfo, action) => {
   switch (action.type) {
-    case constants.LOGIN_REQUEST:
+    case constants.LB_LOGIN_REQUEST:
       return {
         ...state,
         email: action.credentials.email
       }
-    case constants.LOGIN_SUCCESS:
+    case constants.LB_LOGIN_SUCCESS:
       return {
         ...state,
         accessToken: action.userInfo.accessToken,
         userId: action.userInfo.userId
       }
-    case constants.LOGOUT_SUCCESS:
+    case constants.LB_LOGOUT_SUCCESS:
       return null
     default:
       return state
   }
 }
-
-export default combineReducers({ loopbackStore, auth, userInfo })
