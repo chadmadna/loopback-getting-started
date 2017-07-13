@@ -14,5 +14,5 @@ gulp.task('bundle', function () {
     .bundle()
     .on('error', function (err) { console.log('Error : ' + err.message) })
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest(__dirname + './client/public'))
+    .pipe(gulp.dest('./client/public'))
 })
