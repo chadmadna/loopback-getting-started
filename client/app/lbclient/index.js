@@ -1,40 +1,155 @@
 import { get, post, patch, delete as del } from 'axios'
-import autobind from 'autobind-decorator'
+import {
+  request,
+  success,
+  receive,
+  error,
+  requestLogin,
+  receiveLogin,
+  requestLogout,
+  receiveLogout,
+  requestRegister,
+  receiveRegister,
+  authError
+} from './actionCreators'
 
-export default class LoopbackClient {
-  constructor({ baseUrl, accessToken }) {
-    this.baseUrl = baseUrl
-    this.accessToken = accessToken
+const baseUrl = typeof document === 'object' 
+  ? document.body.dataset.baseurl 
+  : 'http://0.0.0.0:3000/api'
+
+const getAccessToken = () => {
+  return JSON.parse(localStorage.getItem('userInfo')).accessToken
+}
+
+export const create = (modelName, data, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { headers: { 'authorization': getAccessToken() } }
+    post(`${baseUrl}/${modelName}`, data, config)
+      .then(() => {
+        dispatch(success(modelName))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
   }
+} 
 
-  @autobind
-  create(modelName, data) {} 
+export const find = (modelName, filter = {}, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { params: { filter }, headers: { 'authorization': getAccessToken() } }
+    get(`${baseUrl}/${modelName}`, config)
+      .then(({ data }) => {
+        dispatch(receive(modelName, data))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
+  }
+} 
 
-  @autobind
-  find(modelName, filter) {} 
+export const findById = (modelName, id, filter = {}, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { params: { filter }, headers: { 'authorization': getAccessToken() } }
+    get(`${baseUrl}/${modelName}/${id}`, config)
+      .then(({ data }) => {
+        dispatch(receive(modelName, data))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
+  }
+} 
 
-  @autobind
-  findById(modelName, id, filter) {} 
+export const findOne = (modelName, filter = {}, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { params: { filter }, headers: { 'authorization': getAccessToken() } }
+    get(`${baseUrl}/${modelName}`, config)
+      .then(({ data }) => {
+        dispatch(receive(data[0]))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
+  }
+} 
 
-  @autobind
-  findOne(modelName, filter) {} 
+export const updateAll = (modelName, filter = {}, data, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { params: { filter }, headers: { 'authorization': getAccessToken() } }
+    post(`${baseUrl}/${modelName}`, data, config)
+      .then(({ data }) => {
+        dispatch(success(modelName))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
+  }
+}
 
-  @autobind
-  updateAll(modelName, filter, data) {} 
+export const updateById = (modelname, id, data, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { params: { filter }, headers: { 'authorization': getAccessToken() } }
+    get(`${baseUrl}/${modelName}/${id}`, config)
+      .then(({ data }) => {
+        dispatch(success(modelName))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
+  }
+}
 
-  @autobind
-  destroyAll(modelName, where) {} 
+export const destroyById = (modelName, id, done) => {
+  return dispatch => {
+    dispatch(request(modelName))
+    const config = { headers: { 'authorization': getAccessToken() } }
+    delete(`${baseUrl}/${modelName}/${id}`, config)
+      .then(({ data }) => {
+        dispatch(success(modelName))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(error(err.message)))
+  }
+}
 
-  @autobind
-  destroyById(modelName, id) {}
+export const register = (credentials, done) => {
+  return dispatch => {
+    dispatch(requestRegister())
 
-  @autobind
-  register(credentials) {}
+    post(`${baseUrl}/User`, credentials)
+      .then(() => {
+        dispatch(receiveRegister())
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(authError(err.message)))
+  }
+}
 
-  @autobind
-  login(credentials) {}
+export const login = (credentials, done) => {
+  return dispatch => {
+    dispatch(requestLogin(credentials))
 
-  @autobind
-  logout() {}
+    post(`${baseUrl}/User/login`, credentials)
+      .then(({ data }) => {
+        dispatch(receiveLogin(data))
+        const userInfo = { accessToken: data.id, userId: data.userId, email: credentials.email }
+        localStorage.setItem('userInfo', JSON.stringify(userInfo))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(authError(err.message)))
+  }
+}
 
+export const logout = (done) => {
+  return dispatch => {
+    dispatch(requestLogout(modelName))
+    const config = { headers: { 'authorization': getAccessToken() } }
+    post(`${baseUrl}/User/logout`, null, config)
+      .then(() => {
+        localStorage.removeItem('userInfo')
+        dispatch(receiveLogout(modelName))
+        if (done && typeof done == 'function') done()
+      })
+      .catch(err => dispatch(authError(err.message)))
+  }
 }
