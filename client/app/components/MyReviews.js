@@ -7,12 +7,12 @@ import { fetchMyReviews, deleteReview } from '../redux/actions'
 class MyReviews extends React.Component {
   constructor(props) {
     super(props)
-    const { dispatch } = this.props
-    dispatch(fetchMyReviews())
+    const { dispatch, userId } = this.props
+    dispatch(fetchMyReviews(userId))
   }
 
   render() {
-    const { reviews, user, dispatch } = this.props
+    const { reviews, userId, dispatch } = this.props
     return (
       <section>
         {
@@ -26,7 +26,7 @@ class MyReviews extends React.Component {
                 </header>
                 <p>{r.rating}&#9733; - {r.comments}</p>
                 {
-                  !!user &&
+                  !!userId &&
                   <div className="actions">
                     <Link role="button" to={`edit-review/${r.id}`}>Edit</Link>
                     <button onClick={e => dispatch(deleteReview(r.id))}>Delete</button>
@@ -41,9 +41,12 @@ class MyReviews extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  reviews: state.reviews.items,
-  user: state.userInfo.userId
-})
+const mapStateToProps = state => {
+  const reviews = state.loopbackStore.Reviews
+  return {
+    reviews: (!!reviews && !!reviews.items) ? reviews.items : [],
+    userId: state.userInfo.userId
+  }
+}
 
 export default connect(mapStateToProps)(MyReviews)

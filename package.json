@@ -9,11 +9,12 @@
     "lint": "eslint .",
     "start": "node .",
     "build": "gulp bundle",
-    "watch": "node_modules/.bin/watchify client/js/index.js -t babelify -p livereactload -o client/dist/index_bundle.js",
+    "watch": "node_modules/.bin/watchify client/app/index.js -t babelify -p livereactload -o client/public/bundle.js",
     "posttest": "npm run lint && nsp check"
   },
   "dependencies": {
     "async": "2.5.0",
+    "autobind-decorator": "2.1.0",
     "axios": "0.16.0",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
